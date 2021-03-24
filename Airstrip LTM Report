@@ -1,0 +1,83 @@
+---
+title: "Airstrip Data"
+author: "Lindsey Kenyon"
+date: "3/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Airstrip Site Background
+The Airstrip, also known as Site 5, consists of approximately 150 acres bound by the Chukchi Sea to the north, North Salt Lagoon and United States Air Force (USAF) property to the south and east, and Imikpuk Lake to the southwest (Figure 2-1).  The site has a 5,000-feet (ft) runway, a large hangar, an apron area, and other buildings including the NARL Treatment Plant.  Several fuel spills occurred on the site between 1976 and 1987.  Fuels reported to have been released at this site include gasoline and jet propellant No. 5 (JP-5). 
+In response to these spills, several investigations and remedial actions were completed, including the installation of a fuel recovery trench and a 1,720 ft long subsurface ice-barrier wall (containment berm/barrier) between 1996 and 2002.  In addition, approximately 4,000 ft of underground fuel pipeline connecting the Airstrip to the Powerhouse were excavated and removed in 1997.  In 2002, an investigation indicated that the free product remaining at the site exists in isolated pockets within the permafrost, and as a result, is relatively immobile. 
+
+As required in the Airstrip Decision Document (DON 2002a), approximately 2,268 cubic yards of fuel-contaminated soils were removed and treated between 2000 and 2002 via hot air vapor extraction.  The treated soil was used to backfill the excavation areas and to cap the south depression in December 2002.  The 1 ft thick soil cap was placed over ice and it covers a portion of the northern half of the south depression. 
+
+During 2010, a soil investigation was conducted to determine the location and magnitude of petroleum compounds that may be contributing to the increasing trends and CUL exceedances in the active zone water.  The soil investigation was conducted at the former spill areas, some of which had been excavated (DON 1993, 2001), in relation to select wells that have shown increasing trends in concentrations of petroleum compounds and associated volatile organic compounds (VOCs).  Borings were conducted with hand-held and power augers to a depth of 2 to 3 ft.  The results were reported in the 2010 Annual Monitoring Report (DON 2011).  Although no soil concentrations exceeded CULs, the 2010 soil investigation identified two (of five) soil borings from the Airstrip Site with elevated fuel levels.  In response to the findings of the 2010 soil investigation and continued increasing trends of COCs in the active zone water, a follow-up soil investigation was performed in 2012 for the Airstrip and Powerhouse sites.  The results of the 2012 investigation can be found in the Soil Investigation Report (DON 2013b).
+
+In September 2011, the USAF installed and developed four new monitoring wells at the Airstrip Site in accordance with the DON’s Standard Operating Procedures as part of the USAF Clean Sweep program.  The purpose of these wells is to better understand if the residual contamination on the DON’s property is migrating via the active zone water to the USAF’s property and the North Salt Lagoon.  Beginning in 2012, these 4 new monitoring wells were included in the LTM network. 
+
+During the summers of 2015 and 2016, the United States Army Corps of Engineers Cold Regions Research and Engineering Laboratory (CRREL) installed 10 wells at the Airstrip Site to assess site conditions (DON 2016a) and possible active zone water flow pathways (DON 2016b).
+
+In 2018, Buildings 133 and 134, and Facility Building 18 were demolished by the DON at the Airstrip Site.  Lead-based paint and asbestos containing material were abated prior to demolition, and contaminated soil from beneath the buildings was excavated and sampled by the DON per the approved work plans (DON 2018b).
+
+## Airstrip (Site 5) Calendar Year
+The Airstrip Decision Document (DON 2002a) stipulates that the LTM program include monitoring of active zone water and surface water quality at Imikpuk Lake.  The 2020 monitoring locations and rationale for the Airstrip Site are as follows (Figure 2-1).
+
+Shoreline wells AS-WP-02C, AS-WP-10, AS-WP-12, and AS-WP-16D:
+
+- Monitor contaminant trends in active zone water adjacent to Imikpuk Lake and downgradient of the containment berm
+- Serve as regulatory points of compliance for active zone water.
+
+Site wells AS-WP-18B, AS-WP-11, and AS-WP-101B:
+
+- Monitor contaminant trends at locations upgradient of the containment berm
+- Represent the historical high concentration locations for the site (source area).
+
+Background well AS-WP-21B:
+
+- Monitor ambient (background) water quality.
+
+Site wells AFAS-WP-19 through AFAS-WP-22.
+
+- Provide active zone water monitoring along the northeast property boundary
+- Evaluate if contamination is migrating from DON property to USAF property and, if so, if it is migrating toward the North Salt Lagoon.
+Surface water locations AS-SW-01 through AS-SW-04:
+- Evaluate contaminant impacts to Imikpuk Lake.
+
+A number of changes to the Airstrip LTM program have been made since its inception; either during the five-year review process or as a result of annual LTM reporting.  In 2013, the Second Five Year Review (DON 2013a) recommended that gasoline-range organics (GRO) monitoring at shoreline well AS-WP-02C be discontinued.  Recommendations resulting from annual LTM reporting include discontinuing nitrate field test kit measurements (DON 2017) and GRO monitoring at site well AFAS-WP-21 (DON 2019).  In addition, sampling for toluene, ethylbenzene, and xylenes at site well AFAS-WP-19 was recommended for discontinuation in 2019.  These changes have been incorporated in the SAP Addendum (DON 2020a).
+
+Monitoring locations are identified in Figure 2-1.  Table 2-1 includes sampling location details.  All well names used in this report reflect the current well names from the 2020 field effort.  Wells referred to as AS-WP-02B and AS-WP-101 in the 2018 field effort were reinstalled and subsequently renamed AS-WP-02C and AS-WP-101B, respectively.
+
+```{r library}
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(readxl)
+library(readr)
+library(lubridate)
+library(naniar)
+```
+## Airstrip Analytical Data
+
+```{r clean headers, echo=FALSE}
+Analytical <- read_xlsx("C:/Users/lkenyon/Desktop/R for the Rest of Us/Barrow LTM/AS Data 2020.xlsx")
+analytical_goodnames <- Analytical %>%
+    clean_names()
+analytical_goodnames %>% 
+  #how do I get my column "collection_date" to be read as a date rather than converted as a number?
+  
+```
+
+```{r}
+analytical_goodnames %>% 
+  filter(benzene_5 > 5.0) %>% 
+  group_by(well_id) %>% 
+  replace_with_na_if(.predicate = is.character,
+                     condition = ~.x %in% na_strings) %>% 
+
+
+#How do  I remove the character strings in all columns that should only be analytical results (i.e. "N/A", "NS", etc.)? The code above isn't working
+```
